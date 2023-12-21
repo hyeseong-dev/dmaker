@@ -3,6 +3,7 @@ package com.fastcampus.programming.dmaker.dto;
 import com.fastcampus.programming.dmaker.entity.Developer;
 import com.fastcampus.programming.dmaker.type.DeveloperLevel;
 import com.fastcampus.programming.dmaker.type.DeveloperSkillType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -29,20 +30,35 @@ public class CreateDeveloper {
         @NotNull @Size(min=3, max=20, message="name size 3 ~ 20")
         private String name;
 
-        @Min(18) private Integer age;
+        @NotNull @Min(18) private Integer age;
     }
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Response{
         private DeveloperLevel developerLevel;
         private DeveloperSkillType developerSkillType;
         private Integer experienceYears;
 
         private String memberId;
+
+        @JsonIgnore
         private String name;
+
+        @JsonIgnore
         private Integer age;
+
+        public static Response fromEntity(Developer developer){
+            return Response.builder()
+                    .developerLevel(developer.getDeveloperLevel())
+                    .developerSkillType(developer.getDeveloperSkillType())
+                    .experienceYears(developer.getExperienceYears())
+                    .memberId(developer.getMemberId())
+                    .build();
+
+        }
     }
 }
