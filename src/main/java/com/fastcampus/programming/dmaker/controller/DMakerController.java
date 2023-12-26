@@ -3,6 +3,7 @@ package com.fastcampus.programming.dmaker.controller;
 import com.fastcampus.programming.dmaker.dto.CreateDeveloper;
 import com.fastcampus.programming.dmaker.dto.DeveloperDetailDto;
 import com.fastcampus.programming.dmaker.dto.DeveloperDto;
+import com.fastcampus.programming.dmaker.dto.EditDeveloper;
 import com.fastcampus.programming.dmaker.service.DMakerService;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
@@ -37,6 +38,16 @@ public class DMakerController {
         return dMakerService.getDeveloperDetail(memberId);
     }
 
+    @PutMapping("/developers/{memberId}")
+    public DeveloperDetailDto editDeveloper(
+            @PathVariable String memberId,
+            @Valid @RequestBody EditDeveloper.Request request
+    ){
+        // PUT /developers/{memberId} HTTP/1.1
+        log.info(String.format("PUT /developers/%s HTTP/1.1", memberId));
+        return dMakerService.editDeveloper(request, memberId);
+    }
+
     @PostMapping("/developers")
     public CreateDeveloper.Response createDeveloper(
             @Valid @RequestBody CreateDeveloper.Request request
@@ -46,4 +57,6 @@ public class DMakerController {
 
         return dMakerService.createDeveloper(request);
     }
+
+
 }
