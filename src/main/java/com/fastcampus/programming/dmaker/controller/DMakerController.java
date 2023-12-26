@@ -52,7 +52,6 @@ public class DMakerController {
     ){
         // POST /developers HTTP/1.1
         log.info("request : " + request);
-
         return dMakerService.createDeveloper(request);
     }
 

@@ -1,10 +1,7 @@
 package com.fastcampus.programming.dmaker.service;
 
 import com.fastcampus.programming.dmaker.code.StatusCode;
-import com.fastcampus.programming.dmaker.dto.CreateDeveloper;
-import com.fastcampus.programming.dmaker.dto.DeveloperDetailDto;
-import com.fastcampus.programming.dmaker.dto.DeveloperDto;
-import com.fastcampus.programming.dmaker.dto.EditDeveloper;
+import com.fastcampus.programming.dmaker.dto.*;
 import com.fastcampus.programming.dmaker.entity.Developer;
 import com.fastcampus.programming.dmaker.entity.RetiredDeveloper;
 import com.fastcampus.programming.dmaker.exception.DMakerErrorCode;
@@ -13,12 +10,14 @@ import com.fastcampus.programming.dmaker.repository.DeveloperRepository;
 import com.fastcampus.programming.dmaker.repository.RetiredDeveloperRepository;
 import com.fastcampus.programming.dmaker.type.DeveloperLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DMakerService {
@@ -29,7 +28,6 @@ public class DMakerService {
     @Transactional
     public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
         validateCreateDeveloperRequest(request);
-
         // business logic start
         Developer developer = Developer.builder()
                 .developerLevel(request.getDeveloperLevel())
@@ -45,14 +43,25 @@ public class DMakerService {
     }
 
     public void validateCreateDeveloperRequest(CreateDeveloper.Request request){
-        // business validation
+
         validateDeveloperLevel(request.getDeveloperLevel(), request.getExperienceYears());
 
-        // 선언식 코드
         developerRepository.findByMemberId(request.getMemberId())
-                .ifPresent((developer) ->{
+                .ifPresent(developer -> {
                     throw new DMakerException(DMakerErrorCode.DUPLICATED_MEMBER_ID);
                 });
+
+        }
+
+    private void validateDeveloperLevel(DeveloperLevel developerLevel, Integer experienceYears) {
+        if(developerLevel == DeveloperLevel.SENIOR && experienceYears < 10 ||
+                developerLevel == DeveloperLevel.JUNGIOR && (experienceYears < 4 || experienceYears > 10) ||
+                developerLevel == DeveloperLevel.JUNIOR && experienceYears > 4
+        ){
+            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED,
+                    DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED.getMessage());
+        }
+
     }
 
     public List<DeveloperDto> getAllEmployedDevelopers() {
@@ -88,20 +97,6 @@ public class DMakerService {
     private void validateEditDeveloperRequest(EditDeveloper.Request request, String memberId) {
         validateDeveloperLevel(request.getDeveloperLevel(), request.getExperienceYears());
 
-    }
-
-    private static void validateDeveloperLevel(DeveloperLevel developerLevel, Integer experienceYears) {
-        if(developerLevel == DeveloperLevel.SENIOR
-                && experienceYears < 10){
-            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if(developerLevel == DeveloperLevel.JUNGIOR
-                && (experienceYears < 4 ||experienceYears > 10)){
-            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if (developerLevel == DeveloperLevel.JUNGIOR && experienceYears > 4){
-            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
     }
 
     @Transactional
