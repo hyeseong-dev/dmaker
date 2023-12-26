@@ -6,11 +6,9 @@ import com.fastcampus.programming.dmaker.dto.DeveloperDto;
 import com.fastcampus.programming.dmaker.dto.EditDeveloper;
 import com.fastcampus.programming.dmaker.service.DMakerService;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -27,7 +25,7 @@ public class DMakerController {
     public List<DeveloperDto> getAllDevelopers(){
         // GET /developers HTTP/1.1
         log.info("GET /developers HTTP/1.1");
-        return dMakerService.getAllDevelopers();
+        return dMakerService.getAllEmployedDevelopers();
     }
 
     @GetMapping("/developers/{memberId}")
@@ -58,5 +56,11 @@ public class DMakerController {
         return dMakerService.createDeveloper(request);
     }
 
+    @DeleteMapping("/developers/{memberId}")
+    public DeveloperDetailDto deleteDeveloper(@PathVariable String memberId){
+        // DELETE /developers HTTP/1.1
+        log.info(String.format("DELETE /developers/%s HTTP/1.1", memberId));
 
+        return dMakerService.deleteDeveloper(memberId);
+    }
 }
