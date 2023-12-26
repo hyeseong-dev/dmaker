@@ -17,6 +17,7 @@ public class EditDeveloper {
     @AllArgsConstructor
     @NoArgsConstructor
     @ToString
+    @Builder
     public static class Request{
 
         @NotNull private DeveloperLevel developerLevel;
